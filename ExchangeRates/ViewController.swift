@@ -39,16 +39,15 @@ class ViewController: UIViewController {
             }else if let unwrappedData = data {
                 do {
                     let json = try JSONSerialization.jsonObject(with: unwrappedData, options: [])
-                    if let dict = json as? [String:Any] {
-                        if let rates = dict["rates"] as? [String:Any]{
-                            self.exchangeRates = rates.map { arg -> ExchangeRate in
-                                let rate = arg.value as! Double
-                                return (ticker: arg.key, rate: rate.toString())
-                            }
-                            DispatchQueue.main.async {
-                                self.tableView?.reloadData()
-                            }
-                        }
+                    guard let dict = json as? [String:Any] else { return }
+                    guard let rates = dict["rates"] as? [String:Any] else { return }
+                    
+                    self.exchangeRates = rates.map { arg -> ExchangeRate in
+                        let rate = arg.value as! Double
+                        return (ticker: arg.key, rate: rate.toString())
+                    }
+                    DispatchQueue.main.async {
+                        self.tableView?.reloadData()
                     }
                 } catch {
                     print(error.localizedDescription)
